@@ -1,258 +1,125 @@
-# SA-Health-Connect-Hospital-ERP-System-
+# SA Health Connect
 
-🏥 SA Health Connect – Full Hospital ERP Planning with Workflows
+**Digitizing South African hospitals for efficiency, transparency, and better patient care.**
 
-Tagline: Digitizing South African hospitals for efficiency, transparency, and patient care.
+🏥 **SA Health Connect** is a modern, full-featured Hospital ERP system designed specifically to address the systemic challenges in South Africa's public healthcare facilities — including long patient waiting times, medicine and supply shortages, staff understaffing & burnout, poor emergency response coordination, lost paperwork, inefficient resource tracking, and limited transparency/accountability.
 
-Tech Stack:
+### Key Challenges Addressed
+South African public hospitals frequently face:
+- Prolonged waiting times due to manual processes, overcrowding, and poor scheduling
+- Chronic shortages of essential medicines, equipment, and even basics like linen
+- Severe staff shortages, high turnover, and inefficient shift/attendance management
+- Inefficient emergency handling and ambulance coordination
+- Lost or inaccessible patient records, leading to repeated tests and errors
+- Poor visibility into hospital KPIs, leading to mismanagement and corruption risks
+- Inadequate real-time communication between departments, patients, and staff
 
-Frontend: Angular 17 + Angular Material + RxJS
+By digitizing core workflows, the system aims to reduce administrative burden, improve resource allocation, enhance patient safety, and support better governance.
 
-Backend: Spring Boot 3 + Spring Security (JWT)
+### Tech Stack
+- **Frontend**: Angular 17 + Angular Material + RxJS
+- **Backend**: Spring Boot 3 + Spring Security (JWT-based authentication & authorization)
+- **Database**: PostgreSQL (with relational integrity for complex workflows)
 
-Database: PostgreSQL
+### Modules Overview & Workflows
 
-Optional Mobile: Ionic
+#### 1. Ambulance & Emergency Management
+**Goal**: Real-time tracking, faster response, hospital preparation, and prioritization of critical cases.
 
-DevOps: Docker, GitHub/GitLab, CI/CD
+**Workflow**: Request → Assignment → Pickup → In-Transit → Hospital Alert → Arrival
 
- Modules Overview & Workflows
+- Patient/app submits emergency (GPS + type)
+- Nearest available ambulance assigned
+- Live GPS tracking (patient app + hospital dashboard)
+- Paramedic marks "Patient Onboard"
+- Real-time vitals/status updates → dynamic ETA & hospital prep (e.g., trauma team activation for high-priority cases)
 
-We’ll define modules, backend entities & APIs, frontend components, and detailed workflows for each.
+**Entities**: Ambulance, EmergencyRequest, LocationLog, HospitalAlert  
+**Key APIs**: `/ambulance/request`, `/ambulance/update-location`, `/ambulance/pickup`, `/hospital/alert`, `/ambulance/eta`  
+**Frontend**: Request form, live map, transit status, alert panel
 
-1️ Ambulance & Emergency Management
+#### 2. Patient Management & Digital Records
+**Goal**: Eliminate lost paperwork, centralize history, secure document access.
 
-Goal: Real-time ambulance tracking, patient pickup, hospital prep, emergency prioritization.
+**Workflow**: Admission → Profile Creation → History Access → Document Upload/Download
 
-Workflow: Ambulance Request → Pickup → Hospital Alert
+- Unique patient ID generation
+- Full history (allergies, visits, prescriptions)
+- Secure upload/view of PDFs/scans
+- Role-based access + audit logs
 
-Patient submits emergency request via app (GPS captured, emergency type).
+**Entities**: Patient, MedicalHistory, DocumentUpload  
+**Key APIs**: `/patients/{id}`, `/patients/upload-doc`, `/patients/{id}/documents`  
+**Frontend**: Profile view, history timeline, upload component
 
-System assigns nearest available ambulance.
+#### 3. Pharmacy & Pill Collection
+**Goal**: Minimize queues, enable scheduled pickups, prevent errors via verification.
 
-Ambulance en route: live GPS tracking → displayed on patient app & hospital dashboard.
+**Workflow**: Prescription → Queue → Notification → QR Pickup → Collection
 
-Paramedic arrives → verifies patient location → presses “Patient onboard”.
+- Doctor creates prescription
+- Pharmacy queue + slot booking
+- SMS/push notification to patient
+- QR scan confirms collection
 
-System updates status → In Transit → triggers Hospital Alert:
+**Entities**: Prescription, PharmacyQueue  
+**Key APIs**: `/prescription/create`, `/prescription/{patientId}`, `/prescription/collect`, `/queue/status`  
+**Frontend**: Prescription list, scan interface, booking form
 
-Patient info (name, ID, emergency type)
+#### 4. Hospital Kitchen & Meal Management
+**Goal**: Safe, correct diet delivery with allergy checks and verification.
 
-ETA
+**Workflow**: Diet Profile → Meal Prep → Scan & Delivery → Confirmation
 
-Vitals if available
+- Patient diet/allergy linked
+- Ward-based prep
+- Wristband/QR scan verifies meal
+- Mismatch alerts
 
-Hospital workflow:
+**Entities**: Meal, DietType, DeliveryLog  
+**Key APIs**: `/meals/{wardId}/{date}`, `/meals/delivered`  
+**Frontend**: Kitchen dashboard, scan component
 
-Normal emergency: relevant staff notified
+#### 5. Staff Management & Attendance
+**Goal**: Accurate clock-in/out, shift planning, automated payroll.
 
-High-level emergency: all available doctors scrambled → trauma room prepared
+**Workflow**: Clock-In → Shift Tracking → Hours Calculation → Payroll
 
-Paramedics update patient condition en route → hospital prep adjusts in real-time
+- App/kiosk clocking
+- Shift scheduling & swap requests
+- Auto payroll with deductions/bonuses
 
-Backend Entities & APIs:
+**Entities**: Staff, Attendance, Shift, Payroll  
+**Key APIs**: `/staff/clockin`, `/staff/clockout`, `/staff/attendance`, `/staff/payroll`  
+**Frontend**: Dashboard, shift calendar, payroll summary
 
-Ambulance, EmergencyRequest, LocationLog, HospitalAlert
+#### 6. Appointments & Scheduling
+**Goal**: Reduce no-shows and optimize doctor time.
 
-APIs:
+**Workflow**: Request → Availability Check → Booking → Reminders
 
-POST /ambulance/request
+- Patient selects doctor/slot
+- Real-time availability
+- Notifications & reschedule/cancel
 
-PUT /ambulance/{id}/update-location
+**Entities**: Appointment, DoctorSchedule  
+**Key APIs**: `/appointments`, `/appointments/{doctorId}`, `/appointments/cancel`  
+**Frontend**: Calendar, list view, notifications
 
-POST /ambulance/pickup
+#### 7. Reporting & Analytics
+**Goal**: Data-driven decisions, KPIs, compliance audits.
 
-POST /hospital/alert
+**Workflow**: Data Aggregation → Reports → Visual Dashboard
 
-GET /ambulance/{requestId}/eta
+- KPIs: wait times, response times, stock levels, bed occupancy, etc.
+- Audit logs for transparency
 
-Frontend Components:
+**Entities**: Report, Log  
+**Key APIs**: `/reports/kpi`, `/reports/logs`  
+**Frontend**: Charts, tables, alerts
 
-ambulance-request-form, ambulance-map, transit-status, hospital-alert-panel
-
-2️ Patient Management & Digital Records
-
-Goal: Reduce lost paperwork, manage history, upload/download medical documents.
-
-Workflow: Patient Admission → Record Access → Document Upload
-
-Patient profile created → unique patient ID.
-
-Doctors and nurses access patient history → prescriptions, previous visits, allergies.
-
-Upload medical documents → PDFs or scans.
-
-Role-based access → only authorized personnel view sensitive data.
-
-Hospital admin can audit logs for compliance.
-
-Backend Entities & APIs:
-
-Patient, MedicalHistory, DocumentUpload
-
-APIs:
-
-GET /patients/{id} → fetch profile
-
-POST /patients/upload-doc
-
-GET /patients/{id}/documents
-
-Frontend Components:
-
-patient-profile, medical-history-view, document-upload
-
-3️ Pharmacy / Pill Collection
-
-Goal: Reduce queues, schedule pickups, QR verification.
-
-Workflow: Prescription → Queue → Pickup → Notification
-
-Doctor uploads prescription → system assigns patient ID.
-
-Pharmacy receives prescription → adds to queue.
-
-Patient receives SMS/notification → schedule pickup slot.
-
-Patient arrives → QR scanned at pharmacy → marks collected.
-
-System updates queue → next patient notified.
-
-Backend Entities & APIs:
-
-Prescription, PharmacyQueue
-
-APIs:
-
-POST /prescription/create
-
-GET /prescription/{patientId}
-
-PUT /prescription/{id}/collect
-
-GET /queue/{pharmacyId}
-
-Frontend Components:
-
-prescription-list, pickup-scan, booking-form
-
-4️ Hospital Kitchen & Meal Management
-
-Goal: Ensure correct diet delivery, allergy safety, ward tracking.
-
-Workflow: Diet → Meal Prep → Delivery → Confirmation
-
-Patient dietary profile stored → allergies & diet type.
-
-Kitchen prepares meals per ward → logs meals.
-
-Delivery staff scan patient wristband → verifies meal.
-
-Delivered status updated in ERP → alerts if mismatch.
-
-Backend Entities & APIs:
-
-Meal, DietType, DeliveryLog
-
-APIs:
-
-GET /meals/{wardId}/{date}
-
-PUT /meals/{id}/delivered
-
-Frontend Components:
-
-meal-dashboard, meal-scan
-
-5️ Staff Management & Attendance
-
-Goal: Clock-in/out, payroll, scheduling, shift tracking.
-
-Workflow: Staff Clock-In → Shift Tracking → Payroll
-
-Staff clocks in via app / kiosk → timestamp stored.
-
-Shifts scheduled → ERP tracks hours worked.
-
-Payroll calculated automatically → includes bonuses, deductions.
-
-Staff dashboard shows upcoming shifts & hours worked.
-
-Backend Entities & APIs:
-
-Staff, Attendance, Shift, Payroll
-
-APIs:
-
-POST /staff/clockin
-
-POST /staff/clockout
-
-GET /staff/attendance/{staffId}
-
-GET /staff/payroll/{staffId}
-
-Frontend Components:
-
-attendance-dashboard, shift-view, payroll-view
-
-6️ Appointments & Scheduling
-
-Goal: Manage doctor appointments and availability.
-
-Workflow: Appointment Request → Booking → Notification
-
-Patient requests appointment → select doctor & time slot.
-
-System checks doctor availability → confirms booking.
-
-Notification sent to patient & doctor.
-
-Doctor reschedules / cancels → system updates patient.
-
-Backend Entities & APIs:
-
-Appointment, DoctorSchedule
-
-APIs:
-
-POST /appointments
-
-GET /appointments/{doctorId}
-
-PUT /appointments/{id}/cancel
-
-Frontend Components:
-
-booking-calendar, appointment-list, notification-panel
-
-7️ Reporting & Analytics
-
-Goal: Provide hospital KPIs, audit logs, and management insights.
-
-Workflow: Data → Reports → Dashboard
-
-Backend aggregates hospital data → patients, staff, prescriptions, meals, ambulance response times.
-
-Reports generated → daily/weekly/monthly.
-
-Frontend dashboard shows KPIs → charts, tables, alerts.
-
-Backend Entities & APIs:
-
-Reports, Logs
-
-APIs:
-
-GET /reports/kpi
-
-GET /reports/logs
-
-Frontend Components:
-
-dashboard-charts, audit-logs
-
- Database Schema (High-Level)
+### High-Level Database Schema
+```sql
 users
 patients
 ambulances
@@ -261,23 +128,13 @@ location_logs
 prescriptions
 pharmacy_queue
 meals
+diet_types
+delivery_logs
 staff
 attendance
-shift
+shifts
 payroll
 appointments
+doctor_schedules
 reports
-logs
-
-
-Relationships
-
-Patient → Appointments (1:M)
-
-Patient → Prescriptions (1:M)
-
-Staff → Attendance (1:M)
-
-Ambulance → EmergencyRequest (1:M)
-
-Meal → Patient (M:1)
+audit_logs
